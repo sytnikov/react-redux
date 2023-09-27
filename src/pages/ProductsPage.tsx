@@ -1,13 +1,19 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import Product from '../types.ts/Product'
 import { AppState } from '../redux/store'
-import { addProduct, removeProduct } from '../redux/reducers/productsReducer'
+import { addProduct, fetchAllProductsAsync, removeProduct } from '../redux/reducers/productsReducer'
+import useAppSelector from '../hooks/useAppSelector'
+import useAppDispatch from '../hooks/useAppDispatch'
 
 const ProductsPage = () => {
-  const products = useSelector((state: AppState) => state.productsReducer) 
-  const dispatch = useDispatch()
+  const products = useAppSelector(state => state.productsReducer)
+  const dispatch = useAppDispatch()
+  
+  useEffect (()=>{
+    dispatch(fetchAllProductsAsync())
+  }, [])
   
   const onAddNew = () => {
     dispatch(addProduct({

@@ -1,7 +1,18 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Product from "../../types.ts/Product";
 
 const initialState: Product[] = [];
+
+export const fetchAllProductsAsync = createAsyncThunk(
+  "fetchAllProductsAsync",
+  async () => {
+    const jsonData = await fetch("https://api.escuelajs.co/api/v1/products")
+    const data: Product[] = await jsonData.json()
+    return data
+  }
+)
+
+// 3 states: pending, fulfilled, rejected
 
 const productsSlice = createSlice({
   name: "productsSlice",
@@ -17,6 +28,11 @@ const productsSlice = createSlice({
       }
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(fetchAllProductsAsync.fulfilled, (state, action)=>{
+      return action.payload
+    })
+  }
 });
 
 const productsReducer = productsSlice.reducer;
