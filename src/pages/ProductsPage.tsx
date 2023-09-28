@@ -1,39 +1,74 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useEffect, useState } from "react";
 
-import Product from '../types.ts/Product'
-import { AppState } from '../redux/store'
-import { addProduct, fetchAllProductsAsync, removeProduct } from '../redux/reducers/productsReducer'
-import useAppSelector from '../hooks/useAppSelector'
-import useAppDispatch from '../hooks/useAppDispatch'
+import {
+  addProduct,
+  fetchAllProductsAsync,
+  removeProduct,
+  sortByPrice,
+} from "../redux/reducers/productsReducer";
+import useAppSelector from "../hooks/useAppSelector";
+import useAppDispatch from "../hooks/useAppDispatch";
+import { AppState } from "../redux/store";
+import getFilteredProducts from "../redux/selectors/getFilteredProducts";
 
 const ProductsPage = () => {
-  const products = useAppSelector(state => state.productsReducer)
-  const dispatch = useAppDispatch()
-  
-  useEffect (()=>{
-    dispatch(fetchAllProductsAsync())
-  }, [])
-  
+  const [search, setSearch] = useState<string | undefined>();
+  // const { products, loading, error } = useAppSelector(
+  //   (state) => state.productsReducer
+  // );
+  // implementing filtering within the component, not changing the global state
+  const filteredProducts = useAppSelector((state) =>
+    getFilteredProducts(state, search)
+  );
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchAllProductsAsync({ offset: 0, limit: 30 }));
+  }, []);
+
+  const onSortAsc = () => {
+    dispatch(sortByPrice("asc"));
+  };
+
+  const onSortDesc = () => {
+    dispatch(sortByPrice("desc"));
+  };
+
   const onAddNew = () => {
-    dispatch(addProduct({
-      id: "qwerty",
-      title: "T-shirt",
-      price: 50,
-      description: "The best T-shirt in the area"
-    }))
-  }
+    dispatch(
+      addProduct({
+        id: "qwerty",
+        title: "T-shirt",
+        price: 50,
+        description: "The best T-shirt in the area",
+      })
+    );
+  };
 
   const onRemove = () => {
-    dispatch(removeProduct("qwerty"))
-  }
+    dispatch(removeProduct("qwerty"));
+  };
 
   return (
     <div>
-      <button onClick={onAddNew}>Add new product</button>
-      <button onClick={onRemove}>Delete a product</button>
+      {/* <button onClick={onAddNew}>Add new product</button>
+      <button onClick={onRemove}>Delete a product</button> */}
+      <button onClick={onSortAsc}>Sort ASC</button>
+      <button onClick={onSortDesc}>Sort DESC</button>
+      <input
+        type="text"
+        placeholder="Search products by title"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+      {filteredProducts.map((p) => (
+        <div key={p.id}>
+          {p.title} {p.price}
+        </div>
+      ))}
     </div>
-  )
-}
+  );
+};
 
-export default ProductsPage
+export default ProductsPage;
