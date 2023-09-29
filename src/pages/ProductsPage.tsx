@@ -8,8 +8,9 @@ import {
 } from "../redux/reducers/productsReducer";
 import useAppSelector from "../hooks/useAppSelector";
 import useAppDispatch from "../hooks/useAppDispatch";
-import { AppState } from "../redux/store";
 import getFilteredProducts from "../redux/selectors/getFilteredProducts";
+import Product from "../types.ts/Product";
+import { addToCart } from "../redux/reducers/cartReducer";
 
 const ProductsPage = () => {
   const [search, setSearch] = useState<string | undefined>();
@@ -20,6 +21,7 @@ const ProductsPage = () => {
   const filteredProducts = useAppSelector((state) =>
     getFilteredProducts(state, search)
   );
+  const cart = useAppSelector(state => state.cartReducer)
 
   const dispatch = useAppDispatch();
 
@@ -50,6 +52,10 @@ const ProductsPage = () => {
     dispatch(removeProduct("qwerty"));
   };
 
+  const onAddToCart = (payload: Product) => {
+    dispatch(addToCart(payload))
+  }
+
   return (
     <div>
       {/* <button onClick={onAddNew}>Add new product</button>
@@ -62,9 +68,17 @@ const ProductsPage = () => {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
+      <p>Items in the cart:</p>
+      {cart && cart.map(item => (
+        <div key={item.id}>
+          {item.title} {item.quantity}
+        </div>
+      ))}
+      <br />
       {filteredProducts.map((p) => (
         <div key={p.id}>
           {p.title} {p.price}
+          <button onClick={() => onAddToCart(p)}>Add To Cart</button>
         </div>
       ))}
     </div>
