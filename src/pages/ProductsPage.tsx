@@ -58,8 +58,8 @@ const ProductsPage = () => {
 
   return (
     <div>
-      {/* <button onClick={onAddNew}>Add new product</button>
-      <button onClick={onRemove}>Delete a product</button> */}
+      <button onClick={onAddNew}>Add new product</button>
+      {/* <button onClick={onRemove}>Delete a product</button> */}
       <button onClick={onSortAsc}>Sort ASC</button>
       <button onClick={onSortDesc}>Sort DESC</button>
       <input
