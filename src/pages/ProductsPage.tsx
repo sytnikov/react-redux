@@ -11,13 +11,16 @@ import useAppDispatch from "../hooks/useAppDispatch";
 import getFilteredProducts from "../redux/selectors/getFilteredProducts";
 import Product from "../types.ts/Product";
 import { addToCart } from "../redux/reducers/cartReducer";
+import { useDeleteProductMutation, useFetchAllProductsQuery } from "../redux/apis/productApis";
 
 const ProductsPage = () => {
   const [search, setSearch] = useState<string | undefined>();
   // const { products, loading, error } = useAppSelector(
   //   (state) => state.productsReducer
   // );
-  // implementing filtering within the component, not changing the global state
+  const {data, error, isLoading, isError} = useFetchAllProductsQuery({limit: 300, offset:0})
+  const [deleteProduct] = useDeleteProductMutation()
+    // implementing filtering within the component, not changing the global state
   const filteredProducts = useAppSelector((state) =>
     getFilteredProducts(state, search)
   );
@@ -26,7 +29,7 @@ const ProductsPage = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchAllProductsAsync({ offset: 0, limit: 30 }));
+    dispatch(fetchAllProductsAsync({ offset: 0, limit: 300 }));
   }, []);
 
   const onSortAsc = () => {
@@ -77,8 +80,9 @@ const ProductsPage = () => {
       <br />
       {filteredProducts.map((p) => (
         <div key={p.id}>
-          {p.title} {p.price}
+          {p.id} {p.title} {p.price}
           <button onClick={() => onAddToCart(p)}>Add To Cart</button>
+          <button onClick={() => deleteProduct(p.id)}>Delete</button>
         </div>
       ))}
     </div>
